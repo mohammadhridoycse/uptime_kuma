@@ -1,0 +1,140 @@
+________________________________________
+🖥️ Uptime Kuma Full Setup & Configuration Guide
+________________________________________
+📌 PART 1: INSTALL UPTIME KUMA (Using Docker)
+✅ Step 1: Install Docker and Docker Compose (Ubuntu/Debian)
+sudo apt update
+sudo apt install docker.io docker-compose -y
+sudo systemctl enable docker --now
+✅ Step 2: Create Uptime Kuma Project Folder
+mkdir -p ~/uptime-kuma
+cd ~/uptime-kuma
+✅ Step 3: Create docker-compose.yml File
+nano docker-compose.yml
+Paste the following:
+version: '3'
+
+services:
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: uptime-kuma
+    restart: always
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./uptime-kuma-data:/app/data
+Save and exit: Ctrl + O, Enter, Ctrl + X
+✅ Step 4: Start Uptime Kuma
+docker-compose up -d
+✅ Step 5: Access Uptime Kuma Web UI
+•	Open browser and go to:
+http://<your-server-ip>:3001
+•	Create an Admin Account (username & password)
+________________________________________
+📌 PART 2: BASIC CONFIGURATION
+✅ Step 6: Create Monitor Group
+1.	Click Group from the left sidebar.
+2.	Click + Add New Group.
+3.	Give a Name (e.g., "Websites", "Internal Services").
+4.	Click Save.
+✅ Step 7: Add New Monitor
+1.	Click the + Add New Monitor button.
+2.	Fill the form:
+o	Monitor Type: HTTP(s), Ping, Port, etc.
+o	Friendly Name: e.g., My Website
+o	URL / IP: e.g., https://example.com
+o	Group: Select the previously created group.
+o	Heartbeat Interval: e.g., 60 seconds
+o	(Optional) Enable retry, upside down mode, etc.
+3.	Click Save
+________________________________________
+📌 PART 3: TELEGRAM NOTIFICATION SETUP
+✅ Step 8: Create a Telegram Bot
+1.	Open Telegram
+2.	Search @BotFather
+3.	Type /newbot
+4.	Follow prompts:
+o	Bot name (e.g., UptimeKumaBot)
+o	Bot username (must end in bot, e.g., mykumabot)
+5.	After success, BotFather will give you a token — save it.
+________________________________________
+✅ Step 9: Get Telegram Chat ID
+1.	Start a chat with your bot: Search your bot by username and click Start.
+2.	Now go to:
+https://api.telegram.org/bot/getUpdates
+(replace <your-bot-token>)
+3.	You will see JSON output like:
+"chat": {
+  "id": 123456789,
+  "first_name": "YourName",
+  ...
+}
+Save the id — that’s your Chat ID.
+________________________________________
+✅ Step 10: Add Telegram Notification in Uptime Kuma
+1.	Go to Settings > Notification.
+2.	Click + Add New Notification.
+3.	Choose Telegram.
+4.	Fill:
+o	Bot Token: from BotFather
+o	Chat ID: from getUpdates
+o	Name: e.g., "Telegram Alert"
+5.	Click Test, then Save.
+________________________________________
+✅ Step 11: Assign Notification to Monitor
+1.	Click the monitor name (e.g., My Website).
+2.	Click the ⚙️ gear icon.
+3.	Scroll down to “Notification”.
+4.	Choose the created Telegram notification from the list.
+5.	Click Save.
+________________________________________
+📌 PART 4: OPTIONAL CONFIGURATION
+________________________________________
+🧱 Add Tags to Monitors
+Helps filter and organize:
+1.	Edit a monitor → Add tags, like critical, internal, external.
+________________________________________
+🔐 Enable 2FA for Admin
+1.	Go to Settings → Security
+2.	Enable 2FA with an authenticator app
+________________________________________
+🌐 Set Public Status Page
+1.	Go to Status Pages → + New Status Page
+2.	Name: e.g., “My Services”
+3.	Add monitors to show
+4.	Save and copy the public link
+________________________________________
+🔄 Update Uptime Kuma
+cd ~/uptime-kuma
+docker-compose down
+docker-compose pull
+docker-compose up -d
+________________________________________
+📌 PART 5: BACKUP AND RESTORE
+🔄 Backup:
+All data is stored in:
+~/uptime-kuma/uptime-kuma-data/
+Back this up regularly using:
+rsync -a ~/uptime-kuma/uptime-kuma-data /path/to/backup/
+________________________________________
+✅ Restore:
+Just restore the data folder to the same path, then start:
+docker-compose up -d
+________________________________________
+📌 Useful Commands
+Purpose	Command
+Restart Kuma	docker-compose restart
+View logs	docker logs -f uptime-kuma
+Stop Kuma	docker-compose down
+Start Kuma	docker-compose up -d
+Check container list	docker ps
+________________________________________
+📋 Summary
+Feature	Status
+Docker Setup	✅ Completed
+Monitor Groups	✅ Done
+Telegram Alerts	✅ Done
+Public Status Page	✅ Optional
+Backup/Restore	✅ Available
+2FA Security	✅ Available
+
